@@ -56,6 +56,16 @@ export default {
         postId: posts[randomIndex(posts.length)].id
       }));
       await queryInterface.bulkInsert('postReactions', postReactionsMappedSeed, {});
+
+      // Add post negative reactions.
+      const postNegativeReactionsMappedSeed = users.map(user => ({
+        isDislike: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        userId: user.id,
+        postId: posts[randomIndex(posts.length)].id
+      }));
+      await queryInterface.bulkInsert('postNegativeReactions', postNegativeReactionsMappedSeed, {});
     } catch (err) {
       console.log(`Seeding error: ${err}`);
     }

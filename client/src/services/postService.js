@@ -40,7 +40,7 @@ export const likePost = async postId => {
 
 export const dislikePost = async postId => {
   const response = await callWebApi({
-    endpoint: '/api/posts/react',
+    endpoint: '/api/posts/negReact',
     type: 'PUT',
     request: {
       postId,

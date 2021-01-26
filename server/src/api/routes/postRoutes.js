@@ -24,6 +24,15 @@ router
       }
       return res.send(reaction);
     })
+    .catch(next))
+  .put('/negReact', (req, res, next) => postService.setReaction(req.user.id, req.body)
+    .then(reaction => {
+      if (reaction.post && (reaction.post.userId !== req.user.id)) {
+        // notify a user if someone (not himself) liked his post
+        // req.io.to(reaction.post.userId).emit('like', 'Your post was liked!');
+      }
+      return res.send(reaction);
+    })
     .catch(next));
 
 export default router;
