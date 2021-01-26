@@ -46,6 +46,26 @@ export default {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       }, { transaction }),
+
+      queryInterface.addColumn('postNegativeReactions', 'userId', {
+        type: Sequelize.UUID,
+        references: {
+          model: 'users',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
+      }, { transaction }),
+      queryInterface.addColumn('postNegativeReactions', 'postId', {
+        type: Sequelize.UUID,
+        references: {
+          model: 'posts',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
+      }, { transaction }),
+
       queryInterface.addColumn('comments', 'userId', {
         type: Sequelize.UUID,
         references: {
@@ -73,6 +93,8 @@ export default {
       queryInterface.removeColumn('posts', 'userId', { transaction }),
       queryInterface.removeColumn('postReactions', 'userId', { transaction }),
       queryInterface.removeColumn('postReactions', 'postId', { transaction }),
+      queryInterface.removeColumn('postNegativeReactions', 'userId', { transaction }),
+      queryInterface.removeColumn('postNegativeReactions', 'postId', { transaction }),
       queryInterface.removeColumn('comments', 'userId', { transaction }),
       queryInterface.removeColumn('comments', 'postId', { transaction })
     ]))

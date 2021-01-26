@@ -1,8 +1,16 @@
 import sequelize from '../db/connection';
-import { PostModel, CommentModel, UserModel, ImageModel, PostReactionModel } from '../models/index';
+import {
+  PostModel,
+  CommentModel,
+  UserModel,
+  ImageModel,
+  PostReactionModel,
+  PostNegativeReactionModel
+} from '../models/index';
 import BaseRepository from './baseRepository';
 
 const likeCase = bool => `CASE WHEN "postReactions"."isLike" = ${bool} THEN 1 ELSE 0 END`;
+const dislikeCase = bool => `CASE WHEN "postNegativeReactions"."isDislike" = ${bool} THEN 1 ELSE 0 END`;
 
 class PostRepository extends BaseRepository {
   async getPosts(filter) {
@@ -26,7 +34,7 @@ class PostRepository extends BaseRepository {
                         FROM "comments" as "comment"
                         WHERE "post"."id" = "comment"."postId")`), 'commentCount'],
           [sequelize.fn('SUM', sequelize.literal(likeCase(true))), 'likeCount'],
-          [sequelize.fn('SUM', sequelize.literal(likeCase(false))), 'dislikeCount']
+          [sequelize.fn('SUM', sequelize.literal(dislikeCase(false))), 'dislikeCount']
         ]
       },
       include: [{
@@ -41,6 +49,10 @@ class PostRepository extends BaseRepository {
         }
       }, {
         model: PostReactionModel,
+        attributes: [],
+        duplicating: false
+      }, {
+        model: PostNegativeReactionModel,
         attributes: [],
         duplicating: false
       }],
@@ -75,7 +87,7 @@ class PostRepository extends BaseRepository {
                         FROM "comments" as "comment"
                         WHERE "post"."id" = "comment"."postId")`), 'commentCount'],
           [sequelize.fn('SUM', sequelize.literal(likeCase(true))), 'likeCount'],
-          [sequelize.fn('SUM', sequelize.literal(likeCase(false))), 'dislikeCount']
+          [sequelize.fn('SUM', sequelize.literal(dislikeCase(false))), 'dislikeCount']
         ]
       },
       include: [{
@@ -100,6 +112,10 @@ class PostRepository extends BaseRepository {
         attributes: ['id', 'link']
       }, {
         model: PostReactionModel,
+        attributes: []
+      },
+      {
+        model: PostNegativeReactionModel,
         attributes: []
       }]
     });
