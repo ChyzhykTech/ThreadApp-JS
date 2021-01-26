@@ -11,6 +11,8 @@ export const create = (userId, post) => postRepository.create({
   userId
 });
 
+export const deletePost = id => postRepository.deleteById(id);
+
 export const setReaction = async (userId, { postId, isLike = true }) => {
   // define the callback for future use as a promise
   const updateOrDelete = react => (react.isLike === isLike
