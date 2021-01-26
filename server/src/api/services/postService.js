@@ -18,7 +18,7 @@ export const setReaction = async (userId, { postId, isLike = true }) => {
     : postReactionRepository.updateById(react.id, { isLike }));
 
   const checkCallback = async (react, negativeReact) => {
-    if (negativeReact) {
+    if (react && negativeReact) {
       if (react.isLike && negativeReact.isDislike) {
         await postNegativeReactionRepository.deleteById(negativeReact.id);
       }
@@ -37,33 +37,28 @@ export const setReaction = async (userId, { postId, isLike = true }) => {
   return Number.isInteger(result) ? {} : postReactionRepository.getPostReaction(userId, postId);
 };
 
-// export const setNegativeReaction = async (userId, { postId, isDislike = true }) => {
-//   // define the callback for future use as a promise
-//   const updateOrDelete = negativeReact => (negativeReact.isDislike === isDislike
-//     ? postNegativeReactionRepository.deleteById(negativeReact.id)
-//     : postNegativeReactionRepository.updateById(negativeReact.id, { isDislike }));
+export const setNegativeReaction = async (userId, { postId, isDislike = true }) => {
+  // define the callback for future use as a promise
+  const updateOrDelete = negativeReact => (negativeReact.isDislike === isDislike
+    ? postNegativeReactionRepository.deleteById(negativeReact.id)
+    : postNegativeReactionRepository.updateById(negativeReact.id, { isDislike }));
 
-//   const checkCallback = async (react, negativeReact) => {
-//     if (react.isLike && negativeReact.isDislike) {
-//       await postReactionRepository.deleteById(negativeReact.id);
-//       return true;
-//     }
-//     return false;
-//   };
+  const checkCallback = async (react, negativeReact) => {
+    if (react && negativeReact) {
+      if (react.isLike && negativeReact.isDislike) {
+        await postReactionRepository.deleteById(react.id);
+      }
+    }
+    return negativeReact !== null;
+  };
 
-//   const reaction = await postReactionRepository.getPostReaction(userId, postId);
-//   const negativeReaction = await postNegativeReactionRepository.getPostNegativeReaction(userId, postId);
+  const reaction = await postReactionRepository.getPostReaction(userId, postId);
+  const negativeReaction = await postNegativeReactionRepository.getPostNegativeReaction(userId, postId);
 
-//   /* eslint-disable no-console */
-//   console.log(reaction);
+  const result = await checkCallback(reaction, negativeReaction)
+    ? await updateOrDelete(negativeReaction)
+    : await postNegativeReactionRepository.create({ userId, postId, isDislike });
 
-//   /* eslint-disable no-console */
-//   console.log(negativeReaction);
-
-//   const result = await checkCallback(reaction, negativeReaction)
-//     ? await updateOrDelete(reaction)
-//     : await postReactionRepository.create({ userId, postId, isDislike });
-
-//   // the result is an integer when an entity is deleted
-//   return Number.isInteger(result) ? {} : postReactionRepository.getPostReaction(userId, postId);
-// };
+  // the result is an integer when an entity is deleted
+  return Number.isInteger(result) ? {} : postNegativeReactionRepository.getPostNegativeReaction(userId, postId);
+};

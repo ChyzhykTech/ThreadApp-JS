@@ -81,7 +81,7 @@ export const dislikePost = postId => async (dispatch, getRootState) => {
 
   const mapDislikes = post => ({
     ...post,
-    dislike: Number(post.dislikeCount) + diff // diff is taken from the current closure
+    dislikeCount: Number(post.dislikeCount) + diff // diff is taken from the current closure
   });
 
   const { posts: { posts, expandedPost } } = getRootState();
