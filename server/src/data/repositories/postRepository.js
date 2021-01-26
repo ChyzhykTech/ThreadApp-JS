@@ -34,9 +34,7 @@ class PostRepository extends BaseRepository {
                         FROM "comments" as "comment"
                         WHERE "post"."id" = "comment"."postId")`), 'commentCount'],
           [sequelize.fn('SUM', sequelize.literal(likeCase(true))), 'likeCount'],
-          // [sequelize.fn('SUM', sequelize.literal(likeCase(false))), 'dislikeCount'],
-          [sequelize.fn('SUM', sequelize.literal(dislikeCase(true))), 'dislikeCount']
-          // [sequelize.fn('SUM', sequelize.literal(dislikeCase(false))), 'dislikeNegativeCount']
+          [sequelize.fn('SUM', sequelize.literal(dislikeCase(false))), 'dislikeCount']
         ]
       },
       include: [{
@@ -89,7 +87,7 @@ class PostRepository extends BaseRepository {
                         FROM "comments" as "comment"
                         WHERE "post"."id" = "comment"."postId")`), 'commentCount'],
           [sequelize.fn('SUM', sequelize.literal(likeCase(true))), 'likeCount'],
-          [sequelize.fn('SUM', sequelize.literal(likeCase(false))), 'dislikeCount']
+          [sequelize.fn('SUM', sequelize.literal(dislikeCase(false))), 'dislikeCount']
         ]
       },
       include: [{
