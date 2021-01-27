@@ -5,7 +5,7 @@ import moment from 'moment';
 
 import styles from './styles.module.scss';
 
-const Post = ({ post, likePost, dislikePost, toggleExpandedPost, sharePost, softRemovePost }) => {
+const Post = ({ authorId, post, likePost, dislikePost, toggleExpandedPost, sharePost, softRemovePost }) => {
   const {
     id,
     image,
@@ -16,6 +16,9 @@ const Post = ({ post, likePost, dislikePost, toggleExpandedPost, sharePost, soft
     commentCount,
     createdAt
   } = post;
+
+  const showRemoveBtn = () => user.id === authorId;
+
   const date = moment(createdAt).fromNow();
   return (
     <Card style={{ width: '100%' }}>
@@ -50,15 +53,18 @@ const Post = ({ post, likePost, dislikePost, toggleExpandedPost, sharePost, soft
         <Label basic size="small" as="a" className={styles.toolbarBtn} onClick={() => sharePost(id)}>
           <Icon name="share alternate" />
         </Label>
-        <Label basic size="small" as="a" className={styles.toolbarBtn} onClick={() => softRemovePost(id)}>
+        {/* eslint-disable  */}
+        {showRemoveBtn() && 
+        <Label basic size="small" as="a" className={`${styles.toolbarBtn} ${styles.revomeBtn}`} onClick={() => softRemovePost(id)} >
           <Icon name="remove" />
-        </Label>
+        </Label>}
       </Card.Content>
     </Card>
   );
 };
 
 Post.propTypes = {
+  authorId: PropTypes.string.isRequired,
   post: PropTypes.objectOf(PropTypes.any).isRequired,
   likePost: PropTypes.func.isRequired,
   dislikePost: PropTypes.func.isRequired,

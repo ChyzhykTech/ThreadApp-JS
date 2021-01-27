@@ -85,6 +85,7 @@ const Thread = ({
       >
         {posts.map(post => (
           <Post
+            authorId={userId}
             post={post}
             likePost={like}
             dislikePost={dislike}
