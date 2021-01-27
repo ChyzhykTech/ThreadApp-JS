@@ -5,7 +5,7 @@ import moment from 'moment';
 
 import styles from './styles.module.scss';
 
-const Post = ({ post, likePost, dislikePost, toggleExpandedPost, sharePost }) => {
+const Post = ({ post, likePost, dislikePost, toggleExpandedPost, sharePost, softRemovePost }) => {
   const {
     id,
     image,
@@ -50,6 +50,9 @@ const Post = ({ post, likePost, dislikePost, toggleExpandedPost, sharePost }) =>
         <Label basic size="small" as="a" className={styles.toolbarBtn} onClick={() => sharePost(id)}>
           <Icon name="share alternate" />
         </Label>
+        <Label basic size="small" as="a" className={styles.toolbarBtn} onClick={() => softRemovePost(id)}>
+          <Icon name="remove" />
+        </Label>
       </Card.Content>
     </Card>
   );
@@ -60,7 +63,8 @@ Post.propTypes = {
   likePost: PropTypes.func.isRequired,
   dislikePost: PropTypes.func.isRequired,
   toggleExpandedPost: PropTypes.func.isRequired,
-  sharePost: PropTypes.func.isRequired
+  sharePost: PropTypes.func.isRequired,
+  softRemovePost: PropTypes.func.isRequired
 };
 
 export default Post;

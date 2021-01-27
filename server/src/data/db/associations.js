@@ -19,7 +19,10 @@ export default models => {
 
   Post.belongsTo(Image);
   Post.belongsTo(User);
-  Post.hasMany(PostReaction);
+  Post.hasMany(PostReaction, {
+    onDelete: 'cascade',
+    hooks: true
+  });
   Post.hasMany(PostNegativeReaction);
   Post.hasMany(Comment);
 

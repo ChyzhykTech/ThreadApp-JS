@@ -26,6 +26,13 @@ export const getPost = async id => {
   return response.json();
 };
 
+export const softDeletePost = async id => {
+  await callWebApi({
+    endpoint: `/api/posts/${id}`,
+    type: 'DELETE'
+  });
+};
+
 export const likePost = async postId => {
   const response = await callWebApi({
     endpoint: '/api/posts/react',

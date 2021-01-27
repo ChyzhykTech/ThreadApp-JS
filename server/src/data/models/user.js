@@ -15,7 +15,8 @@ export default (orm, DataTypes) => {
       unique: true
     },
     createdAt: DataTypes.DATE,
-    updatedAt: DataTypes.DATE
+    updatedAt: DataTypes.DATE,
+    deletedAt: DataTypes.DATE
   }, {});
 
   return User;
