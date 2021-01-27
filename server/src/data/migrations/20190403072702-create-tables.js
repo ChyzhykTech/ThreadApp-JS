@@ -40,7 +40,8 @@ export default {
           type: Sequelize.TEXT
         },
         createdAt: Sequelize.DATE,
-        updatedAt: Sequelize.DATE
+        updatedAt: Sequelize.DATE,
+        deletedAt: Sequelize.DATE
       }, { transaction }),
       queryInterface.createTable('comments', {
         id: {
@@ -71,7 +72,8 @@ export default {
           defaultValue: true
         },
         createdAt: Sequelize.DATE,
-        updatedAt: Sequelize.DATE
+        updatedAt: Sequelize.DATE,
+        deletedAt: Sequelize.DATE
       }, { transaction }),
       queryInterface.createTable('postNegativeReactions', {
         id: {
@@ -87,7 +89,8 @@ export default {
           defaultValue: true
         },
         createdAt: Sequelize.DATE,
-        updatedAt: Sequelize.DATE
+        updatedAt: Sequelize.DATE,
+        deletedAt: Sequelize.DATE
       }, { transaction }),
       queryInterface.createTable('images', {
         id: {

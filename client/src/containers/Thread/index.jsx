@@ -10,7 +10,15 @@ import AddPost from 'src/components/AddPost';
 import SharedPostLink from 'src/components/SharedPostLink';
 import { Checkbox, Loader } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
-import { loadPosts, loadMorePosts, likePost, dislikePost, toggleExpandedPost, addPost } from './actions';
+import {
+  loadPosts,
+  loadMorePosts,
+  likePost,
+  dislikePost,
+  toggleExpandedPost,
+  addPost,
+  softRemovePost
+} from './actions';
 
 import styles from './styles.module.scss';
 
@@ -27,6 +35,7 @@ const Thread = ({
   posts = [],
   expandedPost,
   hasMorePosts,
+  softRemovePost: softRemove,
   addPost: createPost,
   likePost: like,
   dislikePost: dislike,
@@ -76,9 +85,11 @@ const Thread = ({
       >
         {posts.map(post => (
           <Post
+            authorId={userId}
             post={post}
             likePost={like}
             dislikePost={dislike}
+            softRemovePost={softRemove}
             toggleExpandedPost={toggle}
             sharePost={sharePost}
             key={post.id}
@@ -100,6 +111,7 @@ Thread.propTypes = {
   loadMorePosts: PropTypes.func.isRequired,
   likePost: PropTypes.func.isRequired,
   dislikePost: PropTypes.func.isRequired,
+  softRemovePost: PropTypes.func.isRequired,
   toggleExpandedPost: PropTypes.func.isRequired,
   addPost: PropTypes.func.isRequired
 };
@@ -121,6 +133,7 @@ const mapStateToProps = rootState => ({
 const actions = {
   loadPosts,
   loadMorePosts,
+  softRemovePost,
   likePost,
   dislikePost,
   toggleExpandedPost,

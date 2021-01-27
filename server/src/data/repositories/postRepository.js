@@ -120,6 +120,12 @@ class PostRepository extends BaseRepository {
       }]
     });
   }
+
+  softDeletePost(id) {
+    return this.model.destroy({
+      where: { id }
+    });
+  }
 }
 
 export default new PostRepository(PostModel);

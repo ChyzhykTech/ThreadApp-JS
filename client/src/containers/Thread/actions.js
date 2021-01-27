@@ -2,6 +2,7 @@ import * as postService from 'src/services/postService';
 import * as commentService from 'src/services/commentService';
 import {
   ADD_POST,
+  SOFT_REMOVE_POST,
   LOAD_MORE_POSTS,
   SET_ALL_POSTS,
   SET_EXPANDED_POST
@@ -22,6 +23,11 @@ const addPostAction = post => ({
   post
 });
 
+const softDeletePostAction = postId => ({
+  type: SOFT_REMOVE_POST,
+  postId
+});
+
 const setExpandedPostAction = post => ({
   type: SET_EXPANDED_POST,
   post
@@ -38,6 +44,11 @@ export const loadMorePosts = filter => async (dispatch, getRootState) => {
   const filteredPosts = loadedPosts
     .filter(post => !(posts && posts.some(loadedPost => post.id === loadedPost.id)));
   dispatch(addMorePostsAction(filteredPosts));
+};
+
+export const softRemovePost = postId => async dispatch => {
+  await postService.softDeletePost(postId);
+  dispatch(softDeletePostAction(postId));
 };
 
 export const applyPost = postId => async dispatch => {
