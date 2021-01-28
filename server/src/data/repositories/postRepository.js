@@ -85,7 +85,8 @@ class PostRepository extends BaseRepository {
         'comments->user->image.id',
         'user.id',
         'user->image.id',
-        'image.id'
+        'image.id',
+        'postReactions.id'
       ],
       where: { id },
       attributes: {
