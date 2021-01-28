@@ -24,6 +24,7 @@ import styles from './styles.module.scss';
 
 const postsFilter = {
   userId: undefined,
+  userLikedId: undefined,
   from: 0,
   count: 10
 };
@@ -43,10 +44,19 @@ const Thread = ({
 }) => {
   const [sharedPostId, setSharedPostId] = useState(undefined);
   const [showOwnPosts, setShowOwnPosts] = useState(false);
+  const [showOwnLikedPosts, setShowOwnLikedPosts] = useState(false);
 
   const toggleShowOwnPosts = () => {
     setShowOwnPosts(!showOwnPosts);
     postsFilter.userId = showOwnPosts ? undefined : userId;
+    postsFilter.from = 0;
+    load(postsFilter);
+    postsFilter.from = postsFilter.count; // for the next scroll
+  };
+
+  const toggleShowOwnLikedPosts = () => {
+    setShowOwnLikedPosts(!showOwnLikedPosts);
+    postsFilter.userLikedId = showOwnLikedPosts ? undefined : userId;
     postsFilter.from = 0;
     load(postsFilter);
     postsFilter.from = postsFilter.count; // for the next scroll
@@ -71,10 +81,19 @@ const Thread = ({
       </div>
       <div className={styles.toolbar}>
         <Checkbox
+          className={styles.spaceAmongCheckbox}
           toggle
           label="Show only my posts"
           checked={showOwnPosts}
           onChange={toggleShowOwnPosts}
+        />
+
+        <Checkbox
+          className={styles.spaceAmongCheckbox}
+          toggle
+          label="Show only my liked posts"
+          checked={showOwnLikedPosts}
+          onChange={toggleShowOwnLikedPosts}
         />
       </div>
       <InfiniteScroll
