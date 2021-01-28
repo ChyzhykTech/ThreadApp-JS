@@ -7,7 +7,8 @@ const uploadToImgur = async file => {
     const { data: { data } } = await axios.post(
       'https://api.imgur.com/3/upload',
       {
-        image: file.buffer.toString('base64')
+        image: file.buffer.toString('base64'),
+        type: 'base64'
       }, {
         headers: { Authorization: `Client-ID ${imgurId}` }
       }
