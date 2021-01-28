@@ -17,12 +17,18 @@ class PostRepository extends BaseRepository {
     const {
       from: offset,
       count: limit,
-      userId
+      userId,
+      userLikedId
     } = filter;
 
     const where = {};
+    const whereLiked = {};
     if (userId) {
       Object.assign(where, { userId });
+    }
+
+    if (userLikedId) {
+      Object.assign(whereLiked, { userId: userLikedId });
     }
 
     return this.model.findAll({
@@ -49,7 +55,8 @@ class PostRepository extends BaseRepository {
         }
       }, {
         model: PostReactionModel,
-        attributes: [],
+        where: whereLiked,
+        attributes: ['userId'],
         duplicating: false
       }, {
         model: PostNegativeReactionModel,
@@ -60,7 +67,8 @@ class PostRepository extends BaseRepository {
         'post.id',
         'image.id',
         'user.id',
-        'user->image.id'
+        'user->image.id',
+        'postReactions.id'
       ],
       order: [['createdAt', 'DESC']],
       offset,
@@ -112,7 +120,7 @@ class PostRepository extends BaseRepository {
         attributes: ['id', 'link']
       }, {
         model: PostReactionModel,
-        attributes: []
+        attributes: ['userId']
       },
       {
         model: PostNegativeReactionModel,
