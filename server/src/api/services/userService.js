@@ -5,7 +5,11 @@ export const getUserById = async userId => {
   return { id, username, email, imageId, image };
 };
 
-export const updateUser = (userId, imageId, user) => userRepository.updateById(userId, {
-  ...user,
-  imageId
-});
+export const updateUser = async (userId, imageId, user) => {
+  const { id } = await userRepository.updateById(userId, {
+    ...user,
+    imageId
+  });
+
+  return getUserById(id);
+};
