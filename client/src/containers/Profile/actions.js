@@ -28,3 +28,9 @@ export const loadCurrentUser = () => async (dispatch, getRootState) => {
   const user = await authService.getCurrentUser();
   setUser(user)(dispatch, getRootState);
 };
+
+export const uploadAvatar = request => async (dispatch, getRootState) => {
+  await authService.updateUser(request);
+  const user = await authService.getCurrentUser();
+  setUser(user)(dispatch, getRootState);
+};
