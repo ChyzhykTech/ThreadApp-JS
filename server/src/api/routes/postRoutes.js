@@ -26,7 +26,7 @@ router
     })
     .catch(next))
 
-  // TODO: notigy USER
+  // TODO: notify USER
   .put('/negReact', (req, res, next) => postService.setNegativeReaction(req.user.id, req.body)
     .then(reaction => {
       if (reaction.post && (reaction.post.userId !== req.user.id)) {

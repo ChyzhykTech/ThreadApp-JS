@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -13,33 +13,35 @@ import {
 } from 'semantic-ui-react';
 import * as imageService from 'src/services/imageService';
 import ReactCrop from 'react-image-crop';
-import { uploadAvatar } from './actions';
+import { updateUser } from './actions';
 import 'react-image-crop/dist/ReactCrop.css';
 
-// import styles from './styles.module.scss';
+import styles from './styles.module.scss';
 
 const cropInitial = {
   unit: 'px',
-  maxWidth: 200,
-  maxHeight: 200,
-  width: 100,
-  height: 100,
+  width: 200,
+  height: 200,
   aspect: 1 / 1
 };
 
 /* eslint-disable */
-const Profile = ({ 
+const Profile = ({
   user,
-  uploadAvatar
+  updateUser
 }) => {
-  const [isNotEditMode, setEditMode] = useState(true);
+  const [isEditMode, setEditMode] = useState(false);
   const [isOpenModal, setOpenModal] = useState(false);
   const [file, setFile] = useState(undefined);
   const [src, setSrc] = useState(undefined);
-  const [image, setImage] = useState(undefined);
   const [isUploading, setIsUploading] = useState(false);
   const [crop, setCrop] = useState(cropInitial);
-  const [croppedImageUrl, setCroppedImageUrl] = useState(undefined);
+  const [image, setImage] = useState(undefined);
+  const [username, setUserName] = useState(user.username);
+
+  useEffect(() => {
+    imageRef = image;
+  });
 
   let imageRef = undefined;
   let fileUrl = undefined;
@@ -47,8 +49,7 @@ const Profile = ({
   const onSelectFile = e => {
     if (e.target.files && e.target.files.length > 0) {
       const reader = new FileReader();
-      setFile(e.target.files[0]);
-      reader.addEventListener('load', () =>      
+      reader.addEventListener('load', () =>
         setSrc(reader.result)
       );
       reader.readAsDataURL(e.target.files[0]);
@@ -56,6 +57,7 @@ const Profile = ({
   };
 
   const onImageLoaded = image => {
+    setImage(image);
     imageRef = image;
   };
 
@@ -69,16 +71,15 @@ const Profile = ({
 
   const makeClientCrop = async (crop) => {
     if (imageRef && crop.width && crop.height) {
-      const croppedImageUrl = await getCroppedImg(
+      cropImg(
         imageRef,
         crop,
-        'newFile.jpeg'
+        'avatar.jpeg'
       );
-      setCroppedImageUrl(croppedImageUrl);
     }
   };
 
-  const getCroppedImg = (image, crop, fileName) => {
+  const cropImg = (image, crop, fileName) => {
     const canvas = document.createElement('canvas');
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
@@ -98,23 +99,37 @@ const Profile = ({
       crop.height
     );
 
-
-    return new Promise((resolve, reject) => {
-      canvas.toBlob(blob => {
-        if (!blob) {
-          //reject(new Error('Canvas is empty'));
-          return;
-        }
-        blob.name = fileName;
-        window.URL.revokeObjectURL(fileUrl);
-        fileUrl = window.URL.createObjectURL(blob);
-        resolve(fileUrl);
-      }, 'image/jpeg');
-    });
+    canvas.toBlob(blob => {
+      if (!blob) {
+        return;
+      }
+      blob.name = fileName;
+      setFile(blob);
+      window.URL.revokeObjectURL(fileUrl);
+      fileUrl = window.URL.createObjectURL(blob);
+    })
   };
 
+  // TODO: not implement
   const toggleProfileMode = () => {
-    setEditMode(!isNotEditMode);
+    if (isEditMode) {
+      onSubmit();
+    }
+    setEditMode(!isEditMode);
+  };
+
+  const onChangeUserName = (e) => {
+    setUserName(e.target.value);
+  };
+
+  const onSubmit = () => {
+    setIsUploading(true);
+    try {
+      const updatedUser = { ...user, username };
+      updateUser(updatedUser);
+    } finally {
+      setIsUploading(false);
+    };    
   };
 
   const cancelModal = () => {
@@ -126,18 +141,16 @@ const Profile = ({
     setOpenModal(true);
   };
 
-  // TODO: upload avatar to user entity
   const handleUploadFile = async () => {
     setIsUploading(true);
     try {
       const { id: imageId, link: imageLink } = await uploadImage(file);
-      setImage({ imageId, imageLink });
-      const newUser = {...user, imageId, imageLink  };
-      uploadAvatar(newUser);    
+      const updatedUser = { ...user, imageId, imageLink };
+      updateUser(updatedUser);
     } finally {
       // TODO: show error
+      cancelModal();
       setIsUploading(false);
-      console.log(user);
     }
   };
 
@@ -147,15 +160,16 @@ const Profile = ({
 
     <Grid container textAlign="center" style={{ paddingTop: 30 }}>
       <Grid.Column>
-        <Image centered onClick={openModal} src={getUserImgLink(user.image)} size="medium" circular />
+        <Image centered onClick={openModal} src={getUserImgLink(user.image)} size="medium" circular className={styles.avatar} />
         <br />
         <Input
           icon="user"
           iconPosition="left"
           placeholder="Username"
           type="text"
-          disabled={isNotEditMode}
-          value={user.username}
+          onChange={onChangeUserName}
+          disabled={!isEditMode}
+          value={username}
         />
         <br />
         <br />
@@ -164,13 +178,13 @@ const Profile = ({
           iconPosition="left"
           placeholder="Email"
           type="email"
-          disabled={isNotEditMode}
+          disabled
           value={user.email}
         />
         <br />
         <br />
-        <Button type="button" color="teal" size="large" primary onClick={toggleProfileMode}>
-          Edit profile
+        <Button type="button" color="teal" size="large" primary loading={isUploading} disabled={isUploading} onClick={toggleProfileMode}>
+          {!isEditMode ? 'Edit' : 'Save' } 
         </Button>
       </Grid.Column>
 
@@ -183,6 +197,11 @@ const Profile = ({
             <ReactCrop
               src={src}
               crop={crop}
+              circularCrop
+              maxHeight="200"
+              maxWidth="200"
+              minHeight="100"
+              minWidth="100"
               ruleOfThirds
               onImageLoaded={onImageLoaded}
               onComplete={onCropComplete}
@@ -198,7 +217,7 @@ const Profile = ({
           )}
         </Modal.Content>
         <Modal.Actions>
-          <Button onClick={cancelModal} negative>
+          <Button onClick={cancelModal} negative disabled={isUploading}>
             Cancel
           </Button>
 
@@ -216,7 +235,7 @@ const Profile = ({
 
 Profile.propTypes = {
   user: PropTypes.objectOf(PropTypes.any),
-  uploadAvatar: PropTypes.func.isRequired
+  updateUser: PropTypes.func.isRequired
 };
 
 Profile.defaultProps = {
@@ -228,7 +247,7 @@ const mapStateToProps = rootState => ({
 });
 
 const actions = {
-  uploadAvatar
+  updateUser
 };
 
 const mapDispatchToProps = dispatch => bindActionCreators(actions, dispatch);

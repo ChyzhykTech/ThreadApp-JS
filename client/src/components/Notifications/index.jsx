@@ -23,6 +23,10 @@ const Notifications = ({ user, applyPost }) => {
       }
     });
 
+    socket.on('user_data', message => {
+      NotificationManager.info(message);
+    });
+
     return () => {
       socket.close();
     };

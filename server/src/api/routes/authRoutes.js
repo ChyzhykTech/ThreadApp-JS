@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Router } from 'express';
 import * as authService from '../services/authService';
 import * as userService from '../services/userService';
@@ -18,8 +19,11 @@ router
   .get('/user', jwtMiddleware, (req, res, next) => userService.getUserById(req.user.id)
     .then(data => res.send(data))
     .catch(next))
-  .put('/user', jwtMiddleware, (req, res, next) => userService.updateUser(req.user.id, req.body.imageId, req.body.user)
+  .put('/user', jwtMiddleware, (req, res, next) => userService.updateUser(req.user.id, req.body.imageId, req.body)
     .then(data => res.send(data))
-    .catch(next));
+    .catch(err => {
+      req.io.to(req.user.id).emit('user_data', err.message); // notify a user if username or email isn't unique
+      res.status(400).send();
+    }));
 
 export default router;
